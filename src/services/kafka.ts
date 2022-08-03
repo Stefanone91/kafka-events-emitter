@@ -1,5 +1,6 @@
 import {
   Consumer,
+  EachMessageHandler,
   Kafka,
   KafkaConfig,
   logCreator,
@@ -65,31 +66,17 @@ export const kafka = new Kafka(config);
 export async function subscribeMessages() {
   let consumer: Consumer | undefined = undefined;
   try {
-    logger.info("Connecting consumer");
-    consumer = kafka.consumer({
-      groupId: String(process.env.KAFKA_GROUP_ID),
-    });
+    const groupId = String(process.env.KAFKA_GROUP_ID);
+    logger.info(`Connecting consumer to group ${groupId}`);
+    consumer = kafka.consumer({ groupId });
     await consumer.connect();
 
-    logger.info("Subscribe to topic from beginning");
-    await consumer.subscribe({
-      topic: String(process.env.KAFKA_INPUT_TOPIC),
-      fromBeginning: false,
-    });
+    const topic = String(process.env.KAFKA_INPUT_TOPIC);
+    logger.info(`Subscribe to topic ${topic} from beginning`);
+    await consumer.subscribe({ topic, fromBeginning: false });
 
     logger.info("Listening on events");
-    await consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        try {
-          logger.info(
-            `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
-          );
-          logger.info(`${JSON.parse(message?.value?.toString() || "{}")}`);
-        } catch (e: any) {
-          logger.error(`[example/consumer] ${e.message}`, e);
-        }
-      },
-    });
+    await consumer.run({ eachMessage: handleMessage });
 
     while (true) {} // Keeps listening on events without closing
   } catch (e: any) {
@@ -100,6 +87,18 @@ export async function subscribeMessages() {
   }
 }
 
+const handleMessage: EachMessageHandler = async (paylod) => {
+  const { topic, partition, message } = paylod;
+  try {
+    logger.info(
+      `[Topic: ${topic} | Partition: ${partition} | Offset: ${message.offset} | Timestamp: ${message.timestamp}]`
+    );
+    logger.info(`${JSON.parse(message?.value?.toString() || "{}")}`);
+  } catch (e: any) {
+    logger.error(e?.message, e);
+  }
+};
+
 // Producer
 export async function publishMessage(message: string) {
   let producer: Producer | undefined = undefined;
@@ -108,16 +107,11 @@ export async function publishMessage(message: string) {
     producer = kafka.producer();
     await producer.connect();
 
-    logger.info("Sending message");
-    await producer.send({
-      topic: String(process.env.KAFKA_INPUT_TOPIC),
-      messages: [
-        {
-          key: uuid(),
-          value: message,
-        },
-      ],
-    });
+    const key = uuid();
+    const topic = String(process.env.KAFKA_OUTPUT_TOPIC);
+    logger.info(`Sending message with key ${key} to topic ${topic}`);
+    await producer.send({ topic, messages: [{ key, value: message }] });
+    logger.info(`Message successfully sent`);
   } catch (e: any) {
     logger.error(e?.message, e);
     throw e;

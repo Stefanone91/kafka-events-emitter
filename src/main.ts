@@ -7,22 +7,15 @@ import { chooseAction, chooseMessage } from "./services/user-actions";
 (async () => {
   logger.info("Kafka-events-emitter");
 
-  // Choose action
-  const action = await chooseAction();
-
-  // Publish
-  if (action === ActionType.PUBLISH) {
-    let message = await chooseMessage();
-    await publishMessage(message);
-  }
-
-  // Subscribe
-  else if (action === ActionType.SUBSCRIBE) {
-    await subscribeMessages();
-  }
-
-  // No valid action
-  else {
-    logger.warn("No valid action selected");
+  while (true) {
+    const action = await chooseAction();
+    if (action === ActionType.PUBLISH) {
+      let message = await chooseMessage();
+      await publishMessage(message);
+    } else if (action === ActionType.SUBSCRIBE) {
+      await subscribeMessages();
+    } else {
+      logger.warn("No valid action selected");
+    }
   }
 })();
