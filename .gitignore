@@ -1,0 +1,7 @@
+.vscode
+node_modules
+certificates
+dist
+error.log
+message.json
+.env
