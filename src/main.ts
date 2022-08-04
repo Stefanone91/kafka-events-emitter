@@ -7,7 +7,8 @@ import { chooseAction, chooseMessage } from "./services/user-actions";
 (async () => {
   logger.info("Kafka-events-emitter");
 
-  while (true) {
+  let isRunning = true;
+  while (isRunning) {
     const action = await chooseAction();
     if (action === ActionType.PUBLISH) {
       let message = await chooseMessage();
@@ -16,6 +17,7 @@ import { chooseAction, chooseMessage } from "./services/user-actions";
       await subscribeMessages();
     } else {
       logger.warn("No valid action selected");
+      isRunning = false;
     }
   }
 })();
