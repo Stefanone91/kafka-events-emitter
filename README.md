@@ -26,6 +26,12 @@ If you choose option 1, command will prompt you the event message to send. There
 - paste an event (pasted event will be sent)
 - leave it blank (event will be loaded from message.json file)
 
+### Kafka explorer UI
+
+Optionally you can enable the explorer's UI in order to see and create all brokers, topics and consumers.
+
+This fuctionality was through the work of [kafka-ui](https://github.com/provectus/kafka-ui)
+
 ## Develop
 
 Start development environment with `npm run dev`.
