@@ -48,13 +48,14 @@ const config: KafkaConfig = {
     password: String(process.env.KAFKA_SASL_PASSWORD),
   },
   ssl:
-    process.env.KAFKA_SSL_ENABLED === "true"
+    process.env.KAFKA_SSL_ENABLED === "true" &&
+    process.env.KAFKA_SSL_ENABLED_EXTRA_CONFIG === "true"
       ? {
           rejectUnauthorized:
             process.env.KAFKA_SSL_REJECT_UNAUTHORIZED === "true",
           ca: "./certificates/ca.crt",
         }
-      : false,
+      : process.env.KAFKA_SSL_ENABLED === "true",
   logCreator: winstonLogger,
 };
 logger.debug(config);
