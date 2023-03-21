@@ -5,3 +5,7 @@ dist
 error.log
 message.json
 .env
+templates/*
+.dccache
+
+!templates/example.json

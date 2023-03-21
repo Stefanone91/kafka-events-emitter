@@ -12,6 +12,9 @@ import { chooseAction, chooseMessage } from "./services/user-actions";
     const action = await chooseAction();
     if (action === ActionType.PUBLISH) {
       let message = await chooseMessage();
+      if (!message) {
+        continue;
+      }
       await publishMessage(message);
     } else if (action === ActionType.SUBSCRIBE) {
       await subscribeMessages();

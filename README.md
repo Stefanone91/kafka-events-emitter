@@ -4,9 +4,10 @@ Nodejs console application that allows publishing or subscribing to Kafka events
 
 ## Installation
 
-Create a `message.json` file that could be used to insert a json message instead of pasting it into console application.
+Inside `templates` folder create some `.json` files containing a json message to send (if needed).
 
-Create a `.env file` into root and populate it with your environment variables. Look at `.env.example` file to see all available options.
+Create a `.env file` into root and populate it with your environment variables in order to be able to connect to your kafka instance.
+Have a look at `.env.example` file to see all available options.
 
 Run `npm install` to install dependencies.
 
@@ -21,10 +22,8 @@ Follow on screen instructions and choose between two options:
 - Publish message
 - Subscribe to messages
 
-If you choose option 1, command will prompt you the event message to send. There you can:
-
-- paste an event (pasted event will be sent)
-- leave it blank (event will be loaded from message.json file)
+If you choose option 1, command will prompt you to choose for an event message to send by reading ones in the template folder.
+You can also enable a "paste message" option that allows you to paste code inside terminal.
 
 ### Kafka explorer UI
 
